@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import {
 	TopSwap,
 	BottomSwap,
@@ -20,11 +20,11 @@ import { RiArrowUpDownFill } from "react-icons/ri";
 import useFetchBalance from "@/hooks/useFetchBalance";
 import { useAccount, useTransactionConfirmations, useChainId } from "wagmi";
 import { formatUnits } from "viem";
-import { StaticImageData } from "next/image";
 import UseSwap from "@/hooks/useSwap";
 import { getTokensByChainId } from "@/lib/utils";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { toast } from "react-toastify";
+import { fadeIn, pageIn } from "@/utils/anim";
 
 export default function Home() {
 	const chainId = useChainId();
@@ -42,39 +42,47 @@ export default function Home() {
 	const [settingToggle, setSettingToggle] = useState<boolean>(false);
 	const [baseToken, setBaseToken] = useState({
 		...tokenList[0],
-		tokenBalance: 0,
+		tokenBalance: BigInt(0),
 		inputValue: "",
 		price: "",
 	});
 	const [quoteToken, setQuoteToken] = useState({
-		tokenBalance: 0,
+		tokenBalance: BigInt(0),
 		inputValue: "",
 		ca: "",
 		name: "",
 		ticker: "",
-		icon: "" as unknown as StaticImageData,
+		icon: "",
 		price: "",
 		decimals: 0,
 	});
-	const { swapData, approval, checkAllowanceAndSwap, swapTxHarsh } = UseSwap(
-		baseToken,
-		quoteToken,
-		setTxModal,
-		setTxErr
-	);
+	const {
+		swapData,
+		approval,
+		checkAllowanceAndSwap,
+		swapTxHarsh,
+		isGottenSwapData,
+	} = UseSwap(baseToken, quoteToken, setTxModal, setTxErr);
 
-	const { data: baseTokenBalance, isLoading: baseIsLoading } = useFetchBalance(
+	const {
+		data: baseTokenBalance,
+		isloading: baseisloading,
+		refetch: refetchBase,
+	} = useFetchBalance(
 		address!,
-		`${baseToken.ca}-${baseToken.name}`,
+		`${baseToken.ca}-${baseToken.ticker}`,
 		baseToken.ca
 	);
 
-	const { data: quoteTokenBalance, isLoading: quoteIsLoading } =
-		useFetchBalance(
-			address!,
-			`${quoteToken.ca}-${quoteToken.name}`,
-			quoteToken.ca
-		);
+	const {
+		data: quoteTokenBalance,
+		isloading: quoteisloading,
+		refetch: refetchQuote,
+	} = useFetchBalance(
+		address!,
+		`${quoteToken.ca}-${quoteToken.ticker}`,
+		quoteToken.ca
+	);
 
 	const { status } = useTransactionConfirmations({
 		chainId: chainId,
@@ -88,12 +96,12 @@ export default function Home() {
 			setBaseToken({
 				...baseToken,
 				inputValue: "",
-				tokenBalance: Number(baseTokenBalance),
+				tokenBalance: baseTokenBalance as bigint,
 			});
 			setQuoteToken({
 				...quoteToken,
 				inputValue: "",
-				tokenBalance: Number(quoteTokenBalance),
+				tokenBalance: quoteTokenBalance as bigint,
 			});
 		}
 	}, [status, swapTxHarsh]);
@@ -113,7 +121,7 @@ export default function Home() {
 		if (baseTokenBalance !== undefined) {
 			setBaseToken((prevBaseToken) => ({
 				...prevBaseToken,
-				tokenBalance: Number(baseTokenBalance),
+				tokenBalance: baseTokenBalance,
 			}));
 		}
 	}, [baseTokenBalance]);
@@ -122,7 +130,7 @@ export default function Home() {
 		if (quoteTokenBalance !== undefined) {
 			setQuoteToken((prevQuoteToken) => ({
 				...prevQuoteToken,
-				tokenBalance: Number(quoteTokenBalance),
+				tokenBalance: quoteTokenBalance,
 			}));
 		}
 	}, [quoteTokenBalance]);
@@ -131,7 +139,7 @@ export default function Home() {
 		if (swapData?.amountOut && quoteToken.ca)
 			setQuoteToken((prevQuoteToken) => ({
 				...prevQuoteToken,
-				inputValue: Number(swapData?.amountOut).toFixed(3) || "0.0",
+				inputValue: swapData?.amountOut || "0.0",
 			}));
 
 		if (baseToken.inputValue.length === 0)
@@ -152,6 +160,11 @@ export default function Home() {
 		);
 	}, [baseToken.inputValue, baseToken.tokenBalance]);
 
+	const refetchAll = () => {
+		refetchBase();
+		refetchQuote();
+	};
+
 	const handleSwap = () => {
 		const toastOptions = {
 			pauseOnHover: false,
@@ -170,20 +183,24 @@ export default function Home() {
 		}
 
 		if (quoteToken?.inputValue) {
-			checkAllowanceAndSwap(swapData, approval);
+			checkAllowanceAndSwap(swapData, approval, refetchAll);
 		}
 	};
 
 	return (
-		<>
-			<motion.main className=" min-h-[calc(100dvh-90px)] md:min-h-[calc(100dvh-70px)] mb-80px px-4 py-4 pt-[70px] mt-5 md:w-[462.41px] md:pt-[136px] md:m-auto md:px-0">
+		<main className="min-h-[calc(100dvh-90px)] md:min-h-[calc(100dvh-70px)] ">
+			<motion.main
+				initial="hidden"
+				variants={pageIn}
+				animate="show"
+				className="  mb-80px px-4 py-4 pt-[150px] mt-5 md:w-[462.41px] md:pt-[136px] md:m-auto md:px-0 ">
 				<TopIconSection setSettingToggle={setSettingToggle} />
 				<TopSwap
 					setToggleModal={setToggleModal}
 					ToggleModal={ToggleModal}
 					baseToken={baseToken}
 					setBaseToken={setBaseToken}
-					isLoading={baseIsLoading}
+					isloading={baseisloading}
 				/>
 				<RotateTokens ReverseTrade={ReverseTrade} />
 				<BottomSwap
@@ -191,20 +208,23 @@ export default function Home() {
 					ToggleModal={ToggleModal}
 					quoteToken={quoteToken}
 					setQuoteToken={setQuoteToken}
-					isLoading={quoteIsLoading}
+					isloading={quoteisloading}
 				/>
-				{swapData.baseForQuote && (
-					<Info
-						swapData={swapData}
-						baseToken={baseToken}
-						quoteToken={quoteToken}
-					/>
-				)}
+				<AnimatePresence>
+					{isGottenSwapData && (
+						<Info
+							swapData={swapData}
+							baseToken={baseToken}
+							quoteToken={quoteToken}
+						/>
+					)}
+				</AnimatePresence>
+
 				{isConnected && (
 					<button
 						disabled={isInsufficient}
 						onClick={handleSwap}
-						className=" flex items-center justify-center h-[100px] md:h-[54px] w-full mt-3 py-4 px-[18px] bg-[#8F199B] rounded-[10px] shadow- text-darkBG hover:text-darkSlate disabled:opacity-75">
+						className=" flex items-center justify-center h-[54px] w-full mt-3 py-4 px-[18px] bg-[#8F199B] rounded-[10px] shadow- text-darkBG hover:text-darkSlate disabled:opacity-75">
 						{isInsufficient
 							? `Insufficient ${baseToken.ticker} balance`.toUpperCase()
 							: approval
@@ -257,10 +277,11 @@ export default function Home() {
 						txState={txState}
 						txModal={txModal}
 						txErr={txErr}
+						swapTxHarsh={swapTxHarsh}
 					/>
 				)}
 			</AnimatePresence>
-		</>
+		</main>
 	);
 }
 

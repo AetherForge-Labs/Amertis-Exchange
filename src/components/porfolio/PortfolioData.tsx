@@ -4,41 +4,24 @@ import { useAccount, useChainId } from "wagmi";
 import { FiLogOut } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { fadeIn } from "@/utils/anim";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { formatUnits, parseUnits } from "viem";
-import getWalletTokens from "./walletTokens";
 import { TokenBalances } from "@/lib/interface";
+import { BalProvider } from "@/context/provideBal";
+import { useContext } from "react";
 
 const PortfolioData = () => {
-	const { open } = useWeb3Modal();
 	const chainId = useChainId();
 	const { address } = useAccount();
 	const [toggleHistory, setToggleHistory] = useState<boolean>(false);
-	const [tokenBalances, setTokenBalances] = useState<TokenBalances[] | []>([]);
+
+	const { tokenBalances, refetch }: any = useContext(BalProvider);
 
 	// for clipboard
 	const copyAddr = () => {
 		navigator.clipboard.writeText(address as string);
 	};
-
-	console.log("tokenBalances ...  ", tokenBalances);
-
-	useEffect(() => {
-		console.log("trying... ");
-
-		const fechtBals = async () => {
-			if (address || chainId) {
-				const tokenBalances = await getWalletTokens(chainId, address);
-				setTokenBalances(tokenBalances);
-			} else {
-				console.error("There's no address or chainID");
-			}
-		};
-
-		fechtBals();
-	}, [chainId, address]);
 
 	return (
 		<motion.section
@@ -99,10 +82,10 @@ export default PortfolioData;
 
 const WalletTokens = ({ tokenBalances }: any) => {
 	return (
-		<main className=" bg-mainLight mb-[50px] rounded-[16px] md:rounded-[20px] p-4 md:p-8 ">
+		<main className=" bg-glass mb-[50px] rounded-[16px] md:rounded-[20px] p-4 md:p-8 ">
 			<header className="flex items-center justify-between border-b pb-3 mb-3 md:mb-5 ">
 				<p>Assets</p>
-				<p className=" hidden md:block ">Price</p>
+				{/* <p className=" hidden md:block ">Price</p> */}
 				<p>Balance</p>
 			</header>
 
@@ -123,45 +106,52 @@ const WalletTokens = ({ tokenBalances }: any) => {
 const WalletToken = ({ _token }: any) => {
 	return (
 		<>
-			{_token.bal && (
-				<li
-					className={`h-[60px] cursor-default items-center grid grid-cols-2 md:grid-cols-3 overflow-hidden `}>
-					<span className="flex items-center md:gap-2 ">
-						{_token.icon ? (
-							<Image
-								src={_token.icon}
-								alt=""
-								className=" h-8 w-8"
-							/>
-						) : (
-							<div className=" h-8 w-8 rounded-full border-[0.5px] border-mainFG"></div>
-						)}
-						<div className="ml-2 md:ml-0">
-							<h1 className="">{_token.ticker}</h1>
-							<p className=" text-[12px] text-slate-400 font-semibold">
-								{_token.name}
-							</p>
-						</div>
-					</span>
-					<p className="hidden md:block text-center ">
-						{_token.price ? _token.price : "-"}
-					</p>
-					<p className="text-right truncate">
-						{`
+			<li
+				className={`h-[60px] cursor-default items-center grid grid-cols-2 md:grid-cols-3 overflow-hidden `}>
+				<span className="flex items-center md:gap-2 ">
+					{_token.icon ? (
+						<Image
+							src={_token.icon}
+							alt="token icon"
+							width={32}
+							height={32}
+							className="rounded-full "
+						/>
+					) : (
+						<div className=" h-8 w-8 rounded-full border-[0.5px] border-mainFG"></div>
+					)}
+					<div className="ml-2 md:ml-0">
+						<h1 className="">{_token.ticker}</h1>
+						<p className=" text-[12px] text-slate-400 font-semibold">
+							{_token.name}
+						</p>
+					</div>
+				</span>
+				<p className="hidden md:block text-center ">
+					{/* {_token.price ? _token.price : "-"} */}
+				</p>
+				<p className="text-right truncate">
+					{`
 							${
-								_token.bal > parseUnits("0.001", _token.decimals)
-									? Number(formatUnits(_token.bal, _token?.decimals))?.toFixed(
-											3
-									  )
+								_token.balance == 0 || !_token.balance
+									? "0.00"
+									: _token.balance > parseUnits("0.001", _token.decimals)
+									? Number(
+											formatUnits(_token.balance, _token?.decimals)
+									  )?.toFixed(3)
 									: " < 0.001 "
 							} ${_token.ticker}`}{" "}
-					</p>
-				</li>
-			)}
+				</p>
+			</li>
 		</>
 	);
 };
 
 const History = () => {
-	return <main className="  ">HISTORY SECTION</main>;
+	return (
+		<main className="h-[100px] grid place-content-center">
+			{" "}
+			coming soon ...{" "}
+		</main>
+	);
 };

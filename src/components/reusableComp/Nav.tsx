@@ -4,18 +4,15 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import WalletConnectSection from "./WalletConnectSection";
+import { AnimatePresence, motion } from "motion/react";
 
 // icons
 import { FiMenu } from "react-icons/fi";
 import { BiWater } from "react-icons/bi";
 import { HiArrowPath } from "react-icons/hi2";
 import { MdDataUsage } from "react-icons/md";
-import { FiChevronDown } from "react-icons/fi";
 import { SiGitbook } from "react-icons/si";
-
-// images
-import Icon from "/public/Images/Logo.svg";
-import ethLogo from "/public/Images/testnet-token-icons-main/ethLogo.png";
+import { slideIn_variant, slideInChild_variant } from "@/utils/anim";
 
 function Nav({}) {
 	const path = usePathname();
@@ -29,17 +26,21 @@ function Nav({}) {
 	return (
 		<div className=" backdrop-blur-md fixed top-0 w-full z-50">
 			<div className=" bg-mainFG text-white h-[22px] text-xs flex items-center justify-center ">
-				<p>You are on the Monad Testing Phase... </p>
+				<p>Amertis on Monad testnet...</p>
 			</div>
 
 			<div className=" flex items-center gap-4 py-2 pr-3 pl-4 h-[58px] justify-between md:justify-start">
-				<button>
+				<a href="https://amertis.exchange">
 					<Image
-						src={Icon}
+						src={"/Images/Logo.svg"}
 						alt="Logo"
-						className=" h-[32px] w-[32px] "
+						width={32}
+						loading="eager"
+						fetchPriority="high"
+						priority
+						height={32}
 					/>
-				</button>
+				</a>
 
 				{/* Tab and PC Links */}
 				<div className=" md:text-darkSlate md:flex flex-1 md:items-center md:gap-8 md:text-sm md:ml-8 hidden">
@@ -68,29 +69,32 @@ function Nav({}) {
 					<FiMenu className=" text-2xl text-darkBG font-extrabold " />
 				</button>
 			</div>
-
-			{/* THE MOBILE NAV BAR */}
-			<MobileNav
-				toggle={toggle}
-				toggleOff={toggleOff}
-			/>
+			<AnimatePresence>
+				{toggle && <MobileNav toggleOff={toggleOff} />}
+			</AnimatePresence>
 		</div>
 	);
 }
 
 export default Nav;
 
-const MobileNav = ({ toggle, toggleOff }: any) => {
+const MobileNav = ({ toggleOff }: any) => {
 	const path = usePathname();
 
 	return (
-		<div
-			className={`transition-all ease-linear duration-200 overflow-hidden h-screen w-[224px] left-0 bg-mainBG absolute top-0 md:hidden ${
-				toggle ? "left-0" : "left-[-224px]"
-			}`}>
-			<div className="h-full w-full flex flex-col justify-between pt-12 pb-8 pl-8 pr-4 drop-shadow-2xl">
-				{/* Top Section and Links */}
-				<div className=" flex flex-col gap-5 font-medium text-darkBG">
+		<div className=" h-dvh w-dvw fixed inset-0 z-50 overflow-hidden ">
+			<div
+				onClick={toggleOff}
+				className=" h-dvh w-dvw inset-0 absolute "></div>
+
+			<motion.div
+				initial="hidden"
+				animate="show"
+				variants={slideIn_variant}
+				className="bg-background h-full flex flex-col justify-between pt-12 pb-8 pl-8 pr-4 drop-shadow-2xl ">
+				<motion.div
+					variants={slideInChild_variant}
+					className=" flex flex-col gap-5 font-medium text-darkBG">
 					{links.map((_link: any) => (
 						<Link
 							key={_link.name}
@@ -105,23 +109,8 @@ const MobileNav = ({ toggle, toggleOff }: any) => {
 							<h1 className=" font-normal">{_link.name}</h1>
 						</Link>
 					))}
-				</div>
-
-				{/* Bottom section */}
-				<div className=" h-[123.5px] flex flex-col gap-4 justify-end">
-					<button className=" flex justify-center items-center gap-2 text-white bg-darkBG rounded-lg h-9 w-[176px] shadow-md">
-						<Image
-							src={ethLogo}
-							alt="eth"
-							className=" h-6 w-6"
-						/>
-						<h1>ETH</h1>
-						<div className=" text-white">
-							<FiChevronDown />
-						</div>
-					</button>
-				</div>
-			</div>
+				</motion.div>
+			</motion.div>
 		</div>
 	);
 };

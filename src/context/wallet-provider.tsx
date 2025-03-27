@@ -8,6 +8,7 @@ import { State, WagmiProvider } from "wagmi";
 
 // Setup queryClient
 const queryClient = new QueryClient();
+// const config = getConfig();
 
 if (!projectId) throw new Error("Project ID is not defined");
 

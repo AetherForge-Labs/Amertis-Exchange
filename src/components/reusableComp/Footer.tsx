@@ -1,17 +1,16 @@
 import Image from "next/image";
-import Icon from "/public/Images/Logo.svg";
-
 import { BsTwitterX, BsGithub, BsDiscord } from "react-icons/bs";
-import { FaTelegramPlane } from "react-icons/fa";
+// import { FaTelegramPlane } from "react-icons/fa";
 
 function Footer() {
 	return (
-		<footer className=" border-t-[0.5px] border-[rgba(255,255,255,0.2)] h-[70px] p-2 flex items-center justify-center gap-4 md:gap-7 text-2xl">
+		<footer className=" border-t-[0.5px] bg-background border-[rgba(255,255,255,0.2)] h-[70px] p-2 flex items-center justify-center gap-4 md:gap-7 text-2xl">
 			<div className=" items-center hidden md:flex gap-2">
 				<Image
-					src={Icon}
-					alt=""
-					className=" size-7 "
+					src="/Images/Logo.svg"
+					alt="logo"
+					width={28}
+					height={28}
 				/>
 				<h1 className=" font-bold ">AMERTIS</h1>
 			</div>
@@ -36,19 +35,19 @@ const footerLinks = [
 		linkIcon: <BsTwitterX />,
 		linkHref: "https://x.com/AmertisExchange",
 	},
-	{
-		linkName: "Telegram",
-		linkIcon: <FaTelegramPlane />,
-		linkHref: "#",
-	},
+	// {
+	// 	linkName: "Telegram",
+	// 	linkIcon: <FaTelegramPlane />,
+	// 	linkHref: "#",
+	// },
 	{
 		linkName: "GitHub",
 		linkIcon: <BsGithub />,
-		linkHref: "https://github.com/AetherForge-Labs/Amertis-Exchange",
+		linkHref: "https://github.com/AetherForge-Labs",
 	},
 	{
 		linkName: "Discord",
 		linkIcon: <BsDiscord />,
-		linkHref: "#",
+		linkHref: "https://discord.gg/AEwRjGT3T8",
 	},
 ];

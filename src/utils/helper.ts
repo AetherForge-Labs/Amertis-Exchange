@@ -6,11 +6,5 @@ export function calculateSlippageAdjustedOutput(
 		Math.round((slippagePercentage / 100) * Number(expectedOutput))
 	);
 	const adjustedOutput = expectedOutput - slippageAmount;
-	// console.log(
-	//   expectedOutput,
-	//   slippageAmount,
-	//   "expectedOutput -> slippageAmount"
-	// );
-	// console.log(adjustedOutput, "adjustedOutput ");
 	return adjustedOutput;
 }

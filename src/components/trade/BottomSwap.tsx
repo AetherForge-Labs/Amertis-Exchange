@@ -1,16 +1,15 @@
 import { StaticImageData } from "next/image";
 import TokenButton from "./TokenButton";
-import usdcLogo from "/public/Images/testnet-token-icons-main/usdcLogo.png";
-import { formatEther, formatUnits } from "viem";
+import { formatEther, formatUnits, parseUnits } from "viem";
 import { useCallback } from "react";
 import { useAccount } from "wagmi";
 
 type tokenData = {
-	icon: StaticImageData;
+	icon: string;
 	name: string;
 	ticker: string;
 	ca: string;
-	tokenBalance: number | undefined;
+	tokenBalance: bigint | undefined;
 	inputValue: string;
 	decimals: number;
 };
@@ -19,13 +18,13 @@ interface IProps {
 	ToggleModal: boolean;
 	quoteToken?: tokenData;
 	setQuoteToken?: any;
-	isLoading: boolean;
+	isloading: boolean;
 }
 const BottomSwap = ({
 	setToggleModal,
 	quoteToken,
 	setQuoteToken,
-	isLoading,
+	isloading,
 }: IProps) => {
 	const { isConnected } = useAccount();
 
@@ -49,8 +48,8 @@ const BottomSwap = ({
 	);
 
 	return (
-		<div className=" h-[104px] py-4 px-[14px] border border-[#8F199B] rounded-[10px] shadow-sm  bg-mainBG">
-			<div className=" flex justify-between items-center h-[40px]">
+		<div className=" h-[104px] py-4 px-[14px] rounded-2xl p-8 bg-glass ">
+			<div className=" flex justify-between gap-2 items-center h-[40px]">
 				{" "}
 				{/* this is the bottom input */}
 				<input
@@ -58,7 +57,6 @@ const BottomSwap = ({
 					placeholder="0"
 					disabled
 					value={quoteToken?.inputValue ?? ""}
-					//   value={quoteInput ? quoteInput : ""}
 					onChange={hanldeQuoteInput}
 					className=" bg-inherit h-full text-3xl w-[70%] focus:outline-none web "
 				/>
@@ -70,27 +68,28 @@ const BottomSwap = ({
 			</div>
 
 			<div className="mt-3 text-[13px] flex justify-between items-center text-textFaint">
+				{/* this shows the dollar value of the bottom token */}
+				{quoteToken?.inputValue ? <p></p> : <p></p>}
+
 				{/* this shows the balances of the bottom token */}
-				{quoteToken?.inputValue ? (
-					<p>{"$" + quoteToken?.inputValue}</p>
-				) : (
-					<p></p>
-				)}
 				<div className=" flex gap-2 items-center">
 					{isConnected && quoteToken?.name ? (
 						<>
 							<p>Balance</p>
 							<p>
-								{isLoading
-									? ""
-									: quoteToken?.tokenBalance
+								{isloading
+									? "loading ..."
+									: !quoteToken.tokenBalance
+									? "0.000"
+									: quoteToken.tokenBalance >
+									  parseUnits("0.001", quoteToken.decimals)
 									? Number(
 											formatUnits(
 												BigInt(quoteToken?.tokenBalance),
 												quoteToken.decimals
 											)
-									  )?.toFixed(3)
-									: "0.000"}
+									  ).toFixed(3)
+									: " < 0.001"}
 							</p>
 						</>
 					) : (

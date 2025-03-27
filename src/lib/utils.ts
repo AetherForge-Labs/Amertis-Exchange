@@ -10,3 +10,4 @@ export const cn = (...inputs: ClassValue[]) => {
 export const getTokensByChainId = (chainId: number): IToken[] => {
 	return TokenList[chainId] || [];
 };
+

@@ -1,17 +1,17 @@
 "use client";
-import { fadeIn } from "@/utils/anim";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 import Image from "next/image";
 import axelar from "../../../public/Images/bridges/axelar.svg";
 import wormhole from "../../../public/Images/bridges/wormhole.svg";
+import { pageIn } from "@/utils/anim";
 
 const Bridge = () => {
 	return (
 		<motion.main
-			initial={fadeIn.initial}
-			animate={fadeIn.animate}
-			transition={fadeIn.transition}
+			initial="hidden"
+			variants={pageIn}
+			animate="show"
 			className=" min-h-[calc(100dvh-90px)] md:min-h-[calc(100dvh-70px)] pt-[100px] md:pt-[135px] px-4 md:px-6 lg:px-10 ">
 			<h1 className=" font-semibold text-2xl md:text-[38px] text-center ">
 				Move your funds in and out of Monad
@@ -22,7 +22,7 @@ const Bridge = () => {
 				enhancing efficiency.
 			</p>
 
-			<ul className=" flex justify-center gap-5 my-10 md:my-16 ">
+			<ul className=" flex items-center flex-col md:flex-row justify-center gap-5 my-10 md:my-16 ">
 				{bridgesData.map((_bridge) => (
 					<BridgeCard
 						_bridge={_bridge}
@@ -41,7 +41,7 @@ const BridgeCard = ({ _bridge }: any) => {
 		<a
 			href={_bridge.url}
 			target="_blank"
-			className=" cursor-pointer border-[0.5px] border-[rgba(255,255,255,0.2)] rounded-[10px] md:rounded-[20px] bg-mainLight h-[200px] md:h-[250px] max-w-[600px] lg:hover:outline outline-mainFG duration-200 ease-linear transition-all flex flex-col items-start p-4 md:py-6">
+			className=" cursor-pointer border-[0.5px] border-[rgba(255,255,255,0.2)] rounded-[10px] md:rounded-[20px] bg-glass h-[200px] md:h-[250px] max-w-[600px] lg:hover:outline outline-mainFG duration-200 ease-linear transition-all flex flex-col items-start p-4 md:py-6">
 			<Image
 				src={_bridge.icon}
 				alt=""
