@@ -228,15 +228,15 @@ export default function Home() {
 						{isInsufficient
 							? `Insufficient ${baseToken.ticker} balance`.toUpperCase()
 							: approval
-							? "Approve " + baseToken?.ticker
-							: baseToken.inputValue
-							? "Swap"
-							: "ENTER AMOUNT"}
+								? "Approve " + baseToken?.ticker
+								: baseToken.inputValue
+									? "Swap"
+									: "ENTER AMOUNT"}
 					</button>
 				)}
 				{isDisconnected && (
 					<button
-						onClick={() => open({ view: "Connect" })}
+						onClick={() => open()}
 						className=" flex items-center justify-between gap-4 h-[100px] md:h-[79px] w-full mt-3 py-4 px-[18px] bg-[#8F199B] rounded-[10px] shadow- text-darkBG hover:text-darkSlate">
 						<div className=" flex items-center gap-4 text-left">
 							<IoWalletOutline className=" text-2xl" />

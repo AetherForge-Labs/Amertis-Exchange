@@ -85,4 +85,7 @@ body {
 	.bg-glass {
 		@apply backdrop-blur-xl bg-white/[0.07] border border-white/[0.1] shadow-[0_8px_32px_0_rgba(0,0,0,0.36)];
 	}
+	.mint-button {
+		@apply bg-gradient-to-r from-foreground to-secFG text-white px-4 py-2 w-[200px] rounded-2xl mt-4;
+	}
 }

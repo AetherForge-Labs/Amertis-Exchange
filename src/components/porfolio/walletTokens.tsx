@@ -20,7 +20,6 @@ const getWalletTokens = async (
 						const newToken = { ..._token, bal: bal.value };
 						return res(newToken);
 					}
-
 					const bal = await readContract(config as Config, {
 						abi: abi,
 						address: `0x${_token.ca.replace("0x", "")}`,

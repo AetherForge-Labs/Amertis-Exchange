@@ -31,13 +31,13 @@ export const ConnectButton = () => {
 				<button
 					onClick={() => open()}
 					className=" py-2 px-6 rounded-md bg-glass ">{`${address?.slice(
-					0,
-					4
-				)}...${address?.slice(-4)}`}</button>
+						0,
+						4
+					)}...${address?.slice(-4)}`}</button>
 			) : (
 				// <p>CONNECTED</p>
 				<button
-					onClick={() => open({ view: "Connect" })}
+					onClick={() => open()}
 					className="rounded-xl bg-mainFG py-2 px-4 flex items-center gap-2 justify-center mx-auto lg:hover:bg-secFG">
 					<>
 						<IoWalletOutline className=" text-2xl" />
